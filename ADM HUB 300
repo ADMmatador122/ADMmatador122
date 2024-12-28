@@ -1,5 +1,7 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
 local Window = Fluent:CreateWindow({
     Title = "adm hub " .. Fluent.Version,
     TabWidth = 160, 
@@ -49,6 +51,19 @@ Tabs.Main:AddButton({
 })
 
 Tabs.Main:AddButton({
+    Title = "Speed 16", 
+    Callback = function()
+        -- Define a velocidade para 16
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        -- Definindo a velocidade para 16
+        humanoid.WalkSpeed = 16
+    end
+})
+
+Tabs.Main:AddButton({
     Title = "Infinity Yield", 
     Callback = function()
         -- Infinity Yield Script
@@ -82,4 +97,4 @@ Tabs.Main:AddButton({
             end
         end
     end
-})
+}
