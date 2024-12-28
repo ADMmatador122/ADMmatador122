@@ -1,5 +1,3 @@
-
-
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 local Window = Fluent:CreateWindow({
@@ -149,5 +147,23 @@ Tabs.Main:AddButton({
             
             humanoid:MoveTo(character.HumanoidRootPart.Position)  -- Parar movimento
         end)
+    end
+})
+
+-- Adicionando o botão Aimbot
+Tabs.Main:AddButton({
+    Title = "Aimbot", 
+    Callback = function()
+        -- Aimbot Script
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Pawslur/Hdhdh/main/Autoblock"))()
+    end
+})
+
+-- Adicionando o botão Autoblock
+Tabs.Main:AddButton({
+    Title = "Autoblock", 
+    Callback = function()
+        -- Autoblock Script
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Pawslur/Hdhdh/main/Autoblock"))()
     end
 })
