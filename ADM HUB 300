@@ -69,6 +69,7 @@ Tabs.Main:AddButton({
     end
 })
 
+-- Botão para Fling
 Tabs.Main:AddButton({
     Title = "Fling", 
     Callback = function()
@@ -147,23 +148,5 @@ Tabs.Main:AddButton({
             
             humanoid:MoveTo(character.HumanoidRootPart.Position)  -- Parar movimento
         end)
-    end
-})
-
--- Adicionando o botão Aimbot
-Tabs.Main:AddButton({
-    Title = "Aimbot", 
-    Callback = function()
-        -- Aimbot Script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Pawslur/Hdhdh/main/Autoblock"))()
-    end
-})
-
--- Adicionando o botão Autoblock
-Tabs.Main:AddButton({
-    Title = "Autoblock", 
-    Callback = function()
-        -- Autoblock Script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Pawslur/Hdhdh/main/Autoblock"))()
     end
 })
