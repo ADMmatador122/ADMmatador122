@@ -1,3 +1,5 @@
+
+
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 local Window = Fluent:CreateWindow({
@@ -94,5 +96,58 @@ Tabs.Main:AddButton({
                 end
             end
         end
+    end
+})
+
+-- Botão colorido com imagem que movimenta o personagem
+Tabs.Main:AddButton({
+    Title = "Mover Personagem",
+    Callback = function()
+        -- Criar um botão colorido pequeno com imagem na tela
+        local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+        screenGui.Name = "MoverButtonGui"
+        
+        local moveButton = Instance.new("TextButton")
+        moveButton.Size = UDim2.new(0, 50, 0, 50)
+        moveButton.Position = UDim2.new(0.5, -25, 0.5, -25)  -- Colocando o botão no centro da tela
+        moveButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Cor do botão
+        moveButton.Text = ""
+        
+        -- Defina a imagem do botão (adicione uma imagem URL válida)
+        local buttonImage = Instance.new("ImageLabel")
+        buttonImage.Size = UDim2.new(1, 0, 1, 0)
+        buttonImage.Position = UDim2.new(0, 0, 0, 0)
+        buttonImage.Image = "rbxassetid://YOUR_IMAGE_ID"  -- Troque "YOUR_IMAGE_ID" pelo ID da imagem
+        buttonImage.Parent = moveButton
+        
+        moveButton.Parent = screenGui
+        
+        -- Movimentar o personagem de acordo com a posição do botão
+        moveButton.MouseMoved:Connect(function(x, y)
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoid = character:WaitForChild("Humanoid")
+            
+            -- Checando a posição do botão na tela
+            local buttonPosition = moveButton.Position
+            local screenWidth = game:GetService("Workspace").CurrentCamera.ViewportSize.X
+            local screenHeight = game:GetService("Workspace").CurrentCamera.ViewportSize.Y
+
+            -- Movimentar personagem para os lados quando o botão se move
+            if buttonPosition.X.Scale > 0.5 then
+                humanoid:MoveTo(character.HumanoidRootPart.Position + Vector3.new(1, 0, 0))  -- Move para direita
+            elseif buttonPosition.X.Scale < 0.5 then
+                humanoid:MoveTo(character.HumanoidRootPart.Position + Vector3.new(-1, 0, 0))  -- Move para esquerda
+            end
+        end)
+        
+        -- Fazer o personagem parar quando o botão é movido para o centro
+        moveButton.MouseButton1Down:Connect(function()
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoid = character:WaitForChild("Humanoid")
+            
+            humanoid:MoveTo(character.HumanoidRootPart.Position)  -- Parar movimento
+        end)
     end
 })
