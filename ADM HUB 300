@@ -1,152 +1,161 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- Carregar a biblioteca do Hub (Wizard)
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
 
-local Window = Fluent:CreateWindow({
-    Title = "adm hub " .. Fluent.Version,
-    TabWidth = 160, 
-    Size = UDim2.fromOffset(580, 460), 
-    Theme = "Dark"
-})
+-- Criar a janela do Hub com o título "ADM Hub"
+local ADMHubWindow = Library:NewWindow("ADM Hub")
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "Script" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
-}
+-- Criar abas para "Prison Life", "Evade", "Brookhaven", "Loading UI", "Universal" e "UI LIBERY"
+local PrisonLifeSection = ADMHubWindow:NewSection("Prison Life")
+local EvadeSection = ADMHubWindow:NewSection("Evade")
+local BrookhavenSection = ADMHubWindow:NewSection("Brookhaven")
+local LoadingUISection = ADMHubWindow:NewSection("Loading UI")
+local UniversalSection = ADMHubWindow:NewSection("Universal")  -- Nova aba para o Universal
+local UILIBERYSection = ADMHubWindow:NewSection("UI LIBERY")  -- Nova aba para UI LIBERY
 
--- Adicionando parágrafo
-Tabs.Main:AddParagraph({
-    Title = "davi", 
-    Content = "e bem aqui"
-})
+-- Aba para "Prison Life" com scripts específicos
+PrisonLifeSection:CreateButton("Infinity Yield", function()
+    -- Script para carregar o Infinity Yield
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
 
--- Botões
-Tabs.Main:AddButton({
-    Title = "Fly Script", 
-    Callback = function()
-        -- Fly Script
-        loadstring(game:HttpGet('https://pastebin.com/raw/YSL3xKYU'))()
-    end
-})
+PrisonLifeSection:CreateButton("Inf Jump", function()
+    -- Script para carregar o Inf Jump
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/HeyGyt/infjump/main/main"))()
+end)
 
-Tabs.Main:AddButton({
-    Title = "Inf Jump", 
-    Callback = function()
-        -- Inf Jump Script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/HeyGyt/infjump/main/main"))()
-    end
-})
+PrisonLifeSection:CreateButton("Speed 200", function()
+    -- Script para definir a velocidade para 200
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    -- Aumentando a velocidade para 200
+    humanoid.WalkSpeed = 200
+end)
 
-Tabs.Main:AddButton({
-    Title = "Speed 200", 
-    Callback = function()
-        -- Speed 200 Script
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        -- Aumentando a velocidade para 200
-        humanoid.WalkSpeed = 200
-    end
-})
+PrisonLifeSection:CreateButton("Speed 16", function()
+    -- Script para definir a velocidade para 16
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    -- Definindo a velocidade para 16
+    humanoid.WalkSpeed = 16
+end)
 
-Tabs.Main:AddButton({
-    Title = "Speed 16", 
-    Callback = function()
-        -- Define a velocidade para 16
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        -- Definindo a velocidade para 16
-        humanoid.WalkSpeed = 16
-    end
-})
+-- Adicionando o script extra na aba "Prison Life"
+PrisonLifeSection:CreateButton("Script Externo (Prison Life)", function()
+    -- Carregar o script para "Prison Life"
+    loadstring(game:HttpGet('https://freenote.biz/raw/ZcYw0XR8lW'))()
+end)
 
-Tabs.Main:AddButton({
-    Title = "Infinity Yield", 
-    Callback = function()
-        -- Infinity Yield Script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end
-})
+-- Adicionando outro script na aba "Prison Life"
+PrisonLifeSection:CreateButton("Outro Script Externo (Prison Life)", function()
+    -- Carregar o script extra para "Prison Life"
+    loadstring(game:HttpGet('https://paste.website/p/96d68817-3f1e-4fef-a8b8-9aafdc810329.txt'))()
+end)
 
--- Botão para Fling
-Tabs.Main:AddButton({
-    Title = "Fling", 
-    Callback = function()
-        -- Fling Script: Fling outros jogadores longe, mas não o jogador atual
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        -- Criar uma função para fling os outros jogadores
-        for _, target in ipairs(game.Players:GetPlayers()) do
-            if target ~= player then
-                local targetCharacter = target.Character
-                if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") then
-                    -- Fling: aplicando uma força para lançar o outro jogador
-                    local rootPart = targetCharacter:FindFirstChild("HumanoidRootPart")
-                    if rootPart then
-                        local flingForce = Instance.new("BodyVelocity")
-                        flingForce.MaxForce = Vector3.new(100000, 100000, 100000)
-                        flingForce.Velocity = (rootPart.Position - character.HumanoidRootPart.Position).unit * 100
-                        flingForce.Parent = rootPart
-                        game.Debris:AddItem(flingForce, 0.5)  -- Remove a força após 0.5 segundos
-                    end
-                end
+-- Aba para "Evade" com scripts específicos
+EvadeSection:CreateButton("Tect Menu (Evade)", function()
+    -- Carregar o script específico para Evade
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/Infinity2346/Tect-Menu/main/Evade.txt'))()
+end)
+
+EvadeSection:CreateButton("Script Externo 1", function()
+    loadstring(game:HttpGet('https://freenote.biz/raw/ZcYw0XR8lW'))()
+end)
+
+EvadeSection:CreateButton("Script Externo 2", function()
+    loadstring(game:HttpGet(('https://pastefy.app/'..'aV9OfBP4'..'/raw'),true))()
+end)
+
+-- Aba para "Brookhaven" com o script específico fornecido
+BrookhavenSection:CreateButton("Rael Hub Script", function()
+    -- Carregar o script para "Brookhaven"
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Rael-Hub-Universal-24911"))()
+end)
+
+-- Aba para "Loading UI" com o botão para carregar o script
+LoadingUISection:CreateButton("Carregar Loading UI", function()
+    -- Carregar o Loading UI
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI'))()
+end)
+
+-- Aba para "Universal" com o botão para carregar o script
+UniversalSection:CreateButton("Carregar Universal Script", function()
+    -- Carregar o script Universal
+    loadstring(game:HttpGet('https://pastebin.com/raw/WQ9NPeDS'))()
+end)
+
+-- Aba para "UI LIBERY" com o botão para carregar o script
+UILIBERYSection:CreateButton("Carregar BloxFruits Script", function()
+    -- Carregar o script do UI LIBERY para BloxFruits
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/REDzHUB/BloxFruits/main/redz9999"))()
+end)
+
+-- Função para adicionar ESP para a equipe inimiga (vermelha) e a equipe do jogador (azul)
+local function addESP()
+    -- Adicionar ESP para todos os jogadores
+    local players = game:GetService("Players")
+    for _, player in pairs(players:GetPlayers()) do
+        if player.Team ~= game.Players.LocalPlayer.Team then
+            -- Criar um ESP para jogadores da equipe inimiga
+            local char = player.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local esp = Instance.new("BillboardGui")
+                esp.Adornee = char:FindFirstChild("HumanoidRootPart")
+                esp.Size = UDim2.new(0, 100, 0, 50)
+                esp.StudsOffset = Vector3.new(0, 3, 0)
+                esp.AlwaysOnTop = true
+
+                local label = Instance.new("TextLabel")
+                label.Size = UDim2.new(1, 0, 1, 0)
+                label.Text = player.Name
+                label.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Vermelho
+                label.BackgroundTransparency = 1
+                label.TextScaled = true
+                label.Parent = esp
+
+                esp.Parent = player.Character.HumanoidRootPart
             end
         end
     end
-})
+end
 
--- Botão colorido com imagem que movimenta o personagem
-Tabs.Main:AddButton({
-    Title = "Mover Personagem",
-    Callback = function()
-        -- Criar um botão colorido pequeno com imagem na tela
-        local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
-        screenGui.Name = "MoverButtonGui"
-        
-        local moveButton = Instance.new("TextButton")
-        moveButton.Size = UDim2.new(0, 50, 0, 50)
-        moveButton.Position = UDim2.new(0.5, -25, 0.5, -25)  -- Colocando o botão no centro da tela
-        moveButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Cor do botão
-        moveButton.Text = ""
-        
-        -- Defina a imagem do botão (adicione uma imagem URL válida)
-        local buttonImage = Instance.new("ImageLabel")
-        buttonImage.Size = UDim2.new(1, 0, 1, 0)
-        buttonImage.Position = UDim2.new(0, 0, 0, 0)
-        buttonImage.Image = "rbxassetid://YOUR_IMAGE_ID"  -- Troque "YOUR_IMAGE_ID" pelo ID da imagem
-        buttonImage.Parent = moveButton
-        
-        moveButton.Parent = screenGui
-        
-        -- Movimentar o personagem de acordo com a posição do botão
-        moveButton.MouseMoved:Connect(function(x, y)
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            local humanoid = character:WaitForChild("Humanoid")
-            
-            -- Checando a posição do botão na tela
-            local buttonPosition = moveButton.Position
-            local screenWidth = game:GetService("Workspace").CurrentCamera.ViewportSize.X
-            local screenHeight = game:GetService("Workspace").CurrentCamera.ViewportSize.Y
+-- Criando a bolinha com o emoji 😥
+local ball = Instance.new("TextButton")
+ball.Size = UDim2.new(0, 50, 0, 50)  -- Tamanho da bolinha
+ball.Position = UDim2.new(0, 10, 0, 10)  -- Posição da bolinha
+ball.Text = "😥"  -- Emoji da bolinha
+ball.TextSize = 30
+ball.TextButtonMode = Enum.TextButtonMode.Button
+ball.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Cor de fundo branca
+ball.BackgroundTransparency = 0.5  -- Transparência do fundo
+ball.Parent = game.Players.LocalPlayer.PlayerGui
 
-            -- Movimentar personagem para os lados quando o botão se move
-            if buttonPosition.X.Scale > 0.5 then
-                humanoid:MoveTo(character.HumanoidRootPart.Position + Vector3.new(1, 0, 0))  -- Move para direita
-            elseif buttonPosition.X.Scale < 0.5 then
-                humanoid:MoveTo(character.HumanoidRootPart.Position + Vector3.new(-1, 0, 0))  -- Move para esquerda
-            end
-        end)
-        
-        -- Fazer o personagem parar quando o botão é movido para o centro
-        moveButton.MouseButton1Down:Connect(function()
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            local humanoid = character:WaitForChild("Humanoid")
-            
-            humanoid:MoveTo(character.HumanoidRootPart.Position)  -- Parar movimento
-        end)
+-- Função para alternar entre abrir e fechar o Hub
+local function toggleHub()
+    if ADMHubWindow.Visible then
+        ADMHubWindow:Hide()  -- Esconde o Hub
+    else
+        ADMHubWindow:Show()  -- Exibe o Hub
     end
-})
+end
+
+-- Conectando a bolinha para alternar o Hub
+ball.MouseButton1Click:Connect(toggleHub)
+
+-- Criando um botão para ativar o ESP
+ADMHubWindow:NewSection("ESP").CreateButton("Ativar ESP", function()
+    -- Ativar ESP
+    addESP()
+end)
+
+-- Função para inicializar o script
+local function initializeHub()
+    -- Exemplo de funcionalidade extra, como botões adicionais para controlar comportamentos.
+    print("ADM Hub carregado e pronto para uso.")
+end
+
+-- Inicializando o Hub
+initializeHub()
