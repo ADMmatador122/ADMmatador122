@@ -1,85 +1,221 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
-local Window = Fluent:CreateWindow({
-    Title = "adm hub " .. Fluent.Version,
-    TabWidth = 160, 
-    Size = UDim2.fromOffset(580, 460), 
-    Theme = "Dark"
-})
+public class GameManager : MonoBehaviour
+{
+    // Player Movement
+    public float moveSpeed = 5f;
+    public float jumpForce = 5f;
+    private Rigidbody playerRb;
+    private bool isGrounded;
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "Script" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+    // Player Shooting
+    public GameObject[] projectilePrefabs;
+    public Transform shootPoint;
+    public float shootForce = 700f;
+    public AudioSource[] shootSounds;
+
+    // Game Modes
+    public Text modeText;
+    private string[] gameModes = { "Deathmatch", "Capture a Bandeira", "Terroristas vs. Contra-Terroristas", "Modo Cooperativo" };
+    private int currentModeIndex = 0;
+
+    // Player Stats
+    public int level = 1;
+    public int experience = 0;
+    public int experienceToNextLevel = 100;
+    public Text levelText;
+    public Text experienceText;
+    public Slider healthBar;
+    public Text ammoText;
+
+    // Loot and Customization
+    public GameObject[] lootItems;
+    public GameObject[] weaponSkins;
+    private int ammo = 30;
+    private int health = 100;
+
+    // Inventory System
+    public Text inventoryText;
+    private List<string> inventory = new List<string>();
+
+    // Enemy System
+    public GameObject enemyPrefab;
+    public Transform[] spawnPoints;
+    public float spawnRate = 3f;
+
+    // Weapon System
+    private int currentWeaponIndex = 0;
+
+    // In-Game Events
+    public Text eventText;
+
+    void Start()
+    {
+        playerRb = GetComponent<Rigidbody>();
+        UpdateUI();
+        UpdateGameMode();
+        UpdateWeapon();
+        StartCoroutine(SpawnEnemies());
+    }
+
+    void Update()
+    {
+        HandleMovement();
+        HandleShooting();
+        HandleGameModeChange();
+        HandleWeaponSwitch();
+    }
+
+    void HandleMovement()
+    {
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        Vector3 movement = new Vector3(moveX, 0, moveZ) * moveSpeed * Time.deltaTime;
+        transform.Translate(movement);
+
+        if (isGrounded && Input.GetButtonDown("Jump"))
+        {
+            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
+    }
+
+    void HandleShooting()
+    {
+        if (Input.GetButtonDown("Fire1"))
+        {
+            Shoot();
+        }
+    }
+
+    void Shoot()
+    {
+        if (ammo > 0)
+        {
+            GameObject projectile = Instantiate(projectilePrefabs[currentWeaponIndex], shootPoint.position, shootPoint.rotation);
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            rb.AddForce(shootPoint.forward * shootForce);
+            shootSounds[currentWeaponIndex].Play();
+            ammo--;
+            UpdateUI();
+        }
+    }
+
+    void HandleGameModeChange()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            ChangeGameMode();
+        }
+    }
+
+    void ChangeGameMode()
+    {
+        currentModeIndex = (currentModeIndex + 1) % gameModes.Length;
+        UpdateGameMode();
+    }
+
+    void UpdateGameMode()
+    {
+        modeText.text = "Modo de Jogo: " + gameModes[currentModeIndex];
+        eventText.text = "Evento: " + GetRandomEvent();
+    }
+
+    string GetRandomEvent()
+    {
+        string[] events = { "Double XP", "Invasão de Inimigos", "Chuva de Loot" };
+        return events[Random.Range(0, events.Length)];
+    }
+
+    void HandleWeaponSwitch()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            currentWeaponIndex = 0;
+            UpdateWeapon();
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            currentWeaponIndex = 1;
+            UpdateWeapon();
+        }
+        // Adicione mais armas conforme necessário
+    }
+
+    void UpdateWeapon()
+    {
+        foreach (GameObject skin in weaponSkins)
+        {
+            skin.SetActive(false);
+        }
+        weaponSkins[currentWeaponIndex].SetActive(true);
+    }
+
+    void UpdateUI()
+    {
+        healthBar.value = health;
+        ammoText.text = "Munição: " + ammo;
+        levelText.text = "Nível: " + level;
+        experienceText.text = "Experiência: " + experience + "/" + experienceToNextLevel;
+        inventoryText.text = "Inventário: " + string.Join(", ", inventory);
+    }
+
+    public void GainExperience(int amount)
+    {
+        experience += amount;
+        if (experience >= experienceToNextLevel)
+        {
+            LevelUp();
+        }
+        UpdateUI();
+    }
+
+    void LevelUp()
+    {
+        level++;
+        experience -= experienceToNextLevel;
+        experienceToNextLevel += 50; // Exemplo de escala de dificuldade
+        UpdateUI();
+    }
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        if (health < 0) health = 0;
+        UpdateUI();
+    }
+
+    public void DropLoot(Vector3 position)
+    {
+        int randomIndex = Random.Range(0, lootItems.Length);
+        Instantiate(lootItems[randomIndex], position, Quaternion.identity);
+    }
+
+    public void AddToInventory(string item)
+    {
+        inventory.Add(item);
+        UpdateUI();
+    }
+
+    IEnumerator SpawnEnemies()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(spawnRate);
+            int randomIndex = Random.Range(0, spawnPoints.Length);
+            Instantiate(enemyPrefab, spawnPoints[randomIndex].position, Quaternion.identity);
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
 }
-
--- Adicionando parágrafo
-Tabs.Main:AddParagraph({
-    Title = "davi", 
-    Content = "e bem aqui"
-})
-
--- Botões
-Tabs.Main:AddButton({
-    Title = "Fly Script", 
-    Callback = function()
-        -- Fly Script
-        loadstring(game:HttpGet('https://pastebin.com/raw/YSL3xKYU'))()
-    end
-})
-
-Tabs.Main:AddButton({
-    Title = "Inf Jump", 
-    Callback = function()
-        -- Inf Jump Script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/HeyGyt/infjump/main/main"))()
-    end
-})
-
-Tabs.Main:AddButton({
-    Title = "Speed 200", 
-    Callback = function()
-        -- Speed 200 Script
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        -- Aumentando a velocidade para 200
-        humanoid.WalkSpeed = 200
-    end
-})
-
-Tabs.Main:AddButton({
-    Title = "Infinity Yield", 
-    Callback = function()
-        -- Infinity Yield Script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end
-})
-
-Tabs.Main:AddButton({
-    Title = "Fling", 
-    Callback = function()
-        -- Fling Script: Fling outros jogadores longe, mas não o jogador atual
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        -- Criar uma função para fling os outros jogadores
-        for _, target in ipairs(game.Players:GetPlayers()) do
-            if target ~= player then
-                local targetCharacter = target.Character
-                if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") then
-                    -- Fling: aplicando uma força para lançar o outro jogador
-                    local rootPart = targetCharacter:FindFirstChild("HumanoidRootPart")
-                    if rootPart then
-                        local flingForce = Instance.new("BodyVelocity")
-                        flingForce.MaxForce = Vector3.new(100000, 100000, 100000)
-                        flingForce.Velocity = (rootPart.Position - character.HumanoidRootPart.Position).unit * 100
-                        flingForce.Parent = rootPart
-                        game.Debris:AddItem(flingForce, 0.5)  -- Remove a força após 0.5 segundos
-                    end
-                end
-            end
-        end
-    end
-}) 
