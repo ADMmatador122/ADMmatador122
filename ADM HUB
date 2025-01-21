@@ -1,117 +1,135 @@
--- Criando a interface do executor
-local Executor = Instance.new("ScreenGui")
-local LogoButton = Instance.new("ImageButton")
-local MainFrame = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local ScriptBox = Instance.new("TextBox")
-local ExecuteButton = Instance.new("TextButton")
-local CloseButton = Instance.new("TextButton")
+package com.example.robloxexecutor;
 
--- Configuração do GUI
-Executor.Name = "DynamicExecutor"
-Executor.Parent = game.CoreGui
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
 
--- Botão (Logo) no canto
-LogoButton.Name = "LogoButton"
-LogoButton.Parent = Executor
-LogoButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-LogoButton.BackgroundTransparency = 1
-LogoButton.Position = UDim2.new(0.02, 0, 0.9, 0) -- Fica no canto inferior esquerdo
-LogoButton.Size = UDim2.new(0, 50, 0, 50)
-LogoButton.Image = "rbxassetid://12345678" -- Substitua pelo ID do logo desejado
+public class MainActivity extends AppCompatActivity {
 
--- Menu principal (Frame)
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = Executor
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.Position = UDim2.new(0.35, 0, 1, 0) -- Começa escondido (fora da tela)
-MainFrame.Size = UDim2.new(0, 400, 0, 300)
+    private float initialX, initialY; // Posição inicial do botão
+    private Button executeButton; // Botão executor
 
-Title.Name = "Title"
-Title.Parent = MainFrame
-Title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-Title.Size = UDim2.new(0, 400, 0, 50)
-Title.Font = Enum.Font.SourceSans
-Title.Text = "Dynamic Script Executor"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 22
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-ScriptBox.Name = "ScriptBox"
-ScriptBox.Parent = MainFrame
-ScriptBox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ScriptBox.Position = UDim2.new(0.05, 0, 0.25, 0)
-ScriptBox.Size = UDim2.new(0, 360, 0, 150)
-ScriptBox.Font = Enum.Font.Code
-ScriptBox.PlaceholderText = "Digite ou cole seu script aqui..."
-ScriptBox.Text = ""
-ScriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-ScriptBox.TextSize = 18
-ScriptBox.TextWrapped = true
-ScriptBox.ClearTextOnFocus = false
+        // Layout principal
+        FrameLayout mainLayout = new FrameLayout(this);
+        mainLayout.setBackgroundColor(Color.parseColor("#EAEAEA"));
 
-ExecuteButton.Name = "ExecuteButton"
-ExecuteButton.Parent = MainFrame
-ExecuteButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-ExecuteButton.Position = UDim2.new(0.05, 0, 0.7, 0)
-ExecuteButton.Size = UDim2.new(0, 170, 0, 40)
-ExecuteButton.Font = Enum.Font.SourceSans
-ExecuteButton.Text = "Executar Script"
-ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ExecuteButton.TextSize = 20
+        // Caixa de texto para entrada de scripts
+        EditText scriptInput = new EditText(this);
+        scriptInput.setHint("Digite o script aqui");
+        scriptInput.setBackgroundColor(Color.WHITE);
+        scriptInput.setPadding(20, 20, 20, 20);
+        scriptInput.setGravity(Gravity.START | Gravity.TOP);
 
-CloseButton.Name = "CloseButton"
-CloseButton.Parent = MainFrame
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CloseButton.Position = UDim2.new(0.75, 0, 0.7, 0)
-CloseButton.Size = UDim2.new(0, 80, 0, 40)
-CloseButton.Font = Enum.Font.SourceSans
-CloseButton.Text = "Fechar"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 18
+        // Configurações de layout para o campo de texto
+        FrameLayout.LayoutParams inputParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                600
+        );
+        inputParams.setMargins(50, 50, 50, 0);
+        mainLayout.addView(scriptInput, inputParams);
 
--- Função para abrir e fechar o menu
-local isMenuOpen = false
-LogoButton.MouseButton1Click:Connect(function()
-    if isMenuOpen then
-        MainFrame:TweenPosition(
-            UDim2.new(0.35, 0, 1, 0), -- Move para fora da tela (esconde)
-            Enum.EasingDirection.Out,
-            Enum.EasingStyle.Sine,
-            0.5
-        )
-    else
-        MainFrame:TweenPosition(
-            UDim2.new(0.35, 0, 0.3, 0), -- Move para o centro da tela (mostra)
-            Enum.EasingDirection.Out,
-            Enum.EasingStyle.Sine,
-            0.5
-        )
-    end
-    isMenuOpen = not isMenuOpen
-end)
+        // Área de saída de scripts
+        TextView outputView = new TextView(this);
+        outputView.setText("Saída do script aparecerá aqui...");
+        outputView.setBackgroundColor(Color.WHITE);
+        outputView.setTextColor(Color.BLACK);
+        outputView.setPadding(20, 20, 20, 20);
 
--- Lógica do botão de execução
-ExecuteButton.MouseButton1Click:Connect(function()
-    local scriptToExecute = ScriptBox.Text
-    if scriptToExecute ~= "" then
-        local success, errorMsg = pcall(function()
-            loadstring(scriptToExecute)()
-        end)
-        if not success then
-            warn("Erro ao executar o script: " .. errorMsg)
-        end
-    else
-        warn("Nenhum script foi inserido.")
-    end
-end)
+        // Configurações de layout para a saída
+        FrameLayout.LayoutParams outputParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                400
+        );
+        outputParams.setMargins(50, 700, 50, 0);
+        mainLayout.addView(outputView, outputParams);
 
--- Botão de fechar
-CloseButton.MouseButton1Click:Connect(function()
-    MainFrame:TweenPosition(
-        UDim2.new(0.35, 0, 1, 0), -- Esconde o menu
-        Enum.EasingDirection.Out,
-        Enum.EasingStyle.Sine,
-        0.5
-    )
-    isMenuOpen = false
-end)
+        // Botão executor
+        executeButton = new Button(this);
+        executeButton.setText("Executar");
+        executeButton.setBackgroundColor(Color.parseColor("#4CAF50"));
+        executeButton.setTextColor(Color.WHITE);
+
+        // Configurações de layout para o botão
+        FrameLayout.LayoutParams buttonParams = new FrameLayout.LayoutParams(
+                300,
+                150
+        );
+        buttonParams.gravity = Gravity.CENTER;
+        mainLayout.addView(executeButton, buttonParams);
+
+        // Define a posição inicial do botão
+        initialX = 300;
+        initialY = 1000;
+
+        // Evento de clique no botão
+        executeButton.setOnClickListener(v -> {
+            String script = scriptInput.getText().toString();
+
+            if (script.isEmpty()) {
+                outputView.setText("Por favor, insira um script.");
+                return;
+            }
+
+            try {
+                String result = executeScript(script); // Lógica de execução do script
+                outputView.setText("Resultado:\n" + result);
+            } catch (Exception e) {
+                outputView.setText("Erro ao executar o script: " + e.getMessage());
+            }
+        });
+
+        // Evento de arrastar o botão
+        executeButton.setOnTouchListener(new View.OnTouchListener() {
+            float dX, dY;
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        view.setX(event.getRawX() + dX);
+                        view.setY(event.getRawY() + dY);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        // Verifica se o botão está longe demais e reposiciona
+                        new Handler().postDelayed(() -> {
+                            if (Math.abs(view.getX() - initialX) > 200 ||
+                                Math.abs(view.getY() - initialY) > 200) {
+                                view.setX(initialX);
+                                view.setY(initialY);
+                            }
+                        }, 500);
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        // Configura o layout principal
+        setContentView(mainLayout);
+    }
+
+    // Simulação de execução de script
+    private String executeScript(String script) throws Exception {
+        if (script.contains("print")) {
+            return "Script executado: " + script;
+        } else {
+            throw new Exception("Comando desconhecido ou inválido.");
+        }
+    }
+}
