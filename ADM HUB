@@ -1,19 +1,117 @@
---carregar a biblioteca
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- Criando a interface do executor
+local Executor = Instance.new("ScreenGui")
+local LogoButton = Instance.new("ImageButton")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local ScriptBox = Instance.new("TextBox")
+local ExecuteButton = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
 
-local Window = Fluent:CreateWindow({
-    Title = "adm hub " .. Fluent.Version,
-    TabWidth = 160, Size = UDim2.fromOffset(580, 460), Theme = "Dark"
-})
+-- Configuração do GUI
+Executor.Name = "DynamicExecutor"
+Executor.Parent = game.CoreGui
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "Script" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
-}
---parágrafos
-Tabs.Main:AddParagraph({ Title = "davi", Content = "e bem aqui" })
---Botoes
-Tabs.Main:AddButton({ Title = "Button", Callback = function() 
-print ("loadstring(game:HttpGet("https://raw.githubusercontent.com/HeyGyt/infjump/main/main"))()
-end)")
- end })
+-- Botão (Logo) no canto
+LogoButton.Name = "LogoButton"
+LogoButton.Parent = Executor
+LogoButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+LogoButton.BackgroundTransparency = 1
+LogoButton.Position = UDim2.new(0.02, 0, 0.9, 0) -- Fica no canto inferior esquerdo
+LogoButton.Size = UDim2.new(0, 50, 0, 50)
+LogoButton.Image = "rbxassetid://12345678" -- Substitua pelo ID do logo desejado
+
+-- Menu principal (Frame)
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = Executor
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Position = UDim2.new(0.35, 0, 1, 0) -- Começa escondido (fora da tela)
+MainFrame.Size = UDim2.new(0, 400, 0, 300)
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Title.Size = UDim2.new(0, 400, 0, 50)
+Title.Font = Enum.Font.SourceSans
+Title.Text = "Dynamic Script Executor"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 22
+
+ScriptBox.Name = "ScriptBox"
+ScriptBox.Parent = MainFrame
+ScriptBox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ScriptBox.Position = UDim2.new(0.05, 0, 0.25, 0)
+ScriptBox.Size = UDim2.new(0, 360, 0, 150)
+ScriptBox.Font = Enum.Font.Code
+ScriptBox.PlaceholderText = "Digite ou cole seu script aqui..."
+ScriptBox.Text = ""
+ScriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+ScriptBox.TextSize = 18
+ScriptBox.TextWrapped = true
+ScriptBox.ClearTextOnFocus = false
+
+ExecuteButton.Name = "ExecuteButton"
+ExecuteButton.Parent = MainFrame
+ExecuteButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+ExecuteButton.Position = UDim2.new(0.05, 0, 0.7, 0)
+ExecuteButton.Size = UDim2.new(0, 170, 0, 40)
+ExecuteButton.Font = Enum.Font.SourceSans
+ExecuteButton.Text = "Executar Script"
+ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExecuteButton.TextSize = 20
+
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = MainFrame
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.Position = UDim2.new(0.75, 0, 0.7, 0)
+CloseButton.Size = UDim2.new(0, 80, 0, 40)
+CloseButton.Font = Enum.Font.SourceSans
+CloseButton.Text = "Fechar"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 18
+
+-- Função para abrir e fechar o menu
+local isMenuOpen = false
+LogoButton.MouseButton1Click:Connect(function()
+    if isMenuOpen then
+        MainFrame:TweenPosition(
+            UDim2.new(0.35, 0, 1, 0), -- Move para fora da tela (esconde)
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Sine,
+            0.5
+        )
+    else
+        MainFrame:TweenPosition(
+            UDim2.new(0.35, 0, 0.3, 0), -- Move para o centro da tela (mostra)
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Sine,
+            0.5
+        )
+    end
+    isMenuOpen = not isMenuOpen
+end)
+
+-- Lógica do botão de execução
+ExecuteButton.MouseButton1Click:Connect(function()
+    local scriptToExecute = ScriptBox.Text
+    if scriptToExecute ~= "" then
+        local success, errorMsg = pcall(function()
+            loadstring(scriptToExecute)()
+        end)
+        if not success then
+            warn("Erro ao executar o script: " .. errorMsg)
+        end
+    else
+        warn("Nenhum script foi inserido.")
+    end
+end)
+
+-- Botão de fechar
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame:TweenPosition(
+        UDim2.new(0.35, 0, 1, 0), -- Esconde o menu
+        Enum.EasingDirection.Out,
+        Enum.EasingStyle.Sine,
+        0.5
+    )
+    isMenuOpen = false
+end)
